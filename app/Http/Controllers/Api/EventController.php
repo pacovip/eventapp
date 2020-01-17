@@ -10,7 +10,7 @@ use App\Http\Requests\EditEventRequest;
 class EventController extends Controller
 {
     public function index(){
-        $Events = Event::paginate(10);
+        $Events = Event::with('type')->with('city')->with('town')->with('district')->paginate(10);
         if (!$Events) {
             throw new HttpException(400, "Invalid data");
         }

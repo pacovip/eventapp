@@ -35,3 +35,35 @@ Route::group([], function() {
     Route::Resource('favorite', 'Web\FavoriteController');
     Route::Resource('hobby', 'Web\HobbyController');
 });
+
+
+Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function(){    
+    //Login Routes
+    Route::get('/login','Auth\LoginController@showLoginForm')->name('login');
+    Route::post('/login','Auth\LoginController@login')->name('login');
+    Route::get('/logout','Auth\LoginController@logout')->name('logout');
+    //Forgot Password Routes
+    Route::get('/password/reset','Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+    Route::post('/password/email','Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+    //Reset Password Routes
+    Route::get('/password/reset/{token}','Auth\ResetPasswordController@showResetForm')->name('password.reset');
+    Route::post('/password/reset','Auth\ResetPasswordController@reset')->name('password.update');    
+});
+
+
+Route::prefix('/admin')->name('admin.')->namespace('Admin')->middleware('auth:admin')->group(function(){    
+    // Admin modules routes
+    Route::get('/', 'IndexController@index')->name('home');
+    Route::get('index', 'IndexController@index')->name('index');
+    Route::post('index', 'IndexController@index')->name('index');
+    Route::Resource('profile', 'ProfileController');
+    Route::Resource('user', 'UserController');
+    Route::Resource('admin', 'AdminController');
+    Route::Resource('eventstype', 'Events_typeController');
+    Route::Resource('city', 'CityController');
+    Route::Resource('town', 'TownController');
+    Route::Resource('district', 'DistrictController');
+    Route::Resource('event', 'EventController');
+    Route::Resource('favorite', 'FavoriteController');
+    Route::Resource('hobby', 'HobbyController');
+});

@@ -8,6 +8,8 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Auth\AuthenticationException;
+use CloudCreativity\LaravelJsonApi\Exceptions\HandlesErrors;
+use Neomerx\JsonApi\Exceptions\JsonApiException;
 
 class Handler extends ExceptionHandler
 {
@@ -52,20 +54,59 @@ class Handler extends ExceptionHandler
      *
      * @throws \Exception
      */
+    
+    
+    /*
+     * 
+    use HandlesErrors;
+
+    protected $dontReport = [
+      // ... other exception classes
+      JsonApiException::class,
+    ];
+     */
+    
     public function render($request, Exception $exception)
     {
+        /*
+         * 
+         // for api json         
+        if ($this->isJsonApi($request, $e)) {
+            return $this->renderJsonApi($request, $e);
+            // do standard exception rendering here...
+        }
+        */
+        
         if ($exception instanceof ModelNotFoundException) {
             return response()->json([
                 'error' => 'Resource not found'
             ], 404);
         }
+        //
         return parent::render($request, $exception);
+    }
+    
+    
+    protected function prepareException(Exception $e)
+    {
+        if ($e instanceof JsonApiException) {
+          return $this->prepareJsonApiException($e);
+        }
+
+        return parent::prepareException($e);
     }
     
     /*
      * error si user non authentifier
      */
     protected function unauthenticated($request, AuthenticationException $exception){
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+        if ($request->is('admin') || $request->is('admin/*')) {
+            return redirect()->guest('/admin/login');
+        }
+        //
         return response()->json(['error' => 'Unauthenticated'], 401);
     }
 }

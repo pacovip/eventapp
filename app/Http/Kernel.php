@@ -42,13 +42,13 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
         
-        /*
+        
         'api-v1' => [
             'json-api:v1',
             CheckForMaintenanceMode::class,
             'throttle:60,1',
             'bindings',
-        ],*/
+        ],/**/
     ];
 
     /**
